@@ -19,10 +19,11 @@ def main():
         # Capture sometimes adds trailing underscores for some reason - I'd rather remove these
         game_name = game_name.replace("_ ", " ")
 
-        game_dir = screenshots / 'Test' / game_name
+        game_dir = screenshots / 'Games' / game_name
         game_dir.mkdir(exist_ok=True, parents=True)
-        # print('Copy from %s to %s' % (file.name, game_dir))
-        shutil.copy2(file, game_dir)
+        # Filepaths must be converted to strings because of a Python bug
+        # in python <3.9, move breaks on Path objects
+        shutil.move(str(file), str(game_dir))
 
 
 
