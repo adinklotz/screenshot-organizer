@@ -18,6 +18,8 @@ def main():
         game_name = game_name.encode('ascii', 'ignore').decode()
         # Capture sometimes adds trailing underscores for some reason - I'd rather remove these
         game_name = game_name.replace("_ ", " ")
+        # Windows directories can't end in a dot or a space
+        game_name = re.sub(r'\.+$| +$', '', game_name)
 
         game_dir = screenshots / 'Games' / game_name
         game_dir.mkdir(exist_ok=True, parents=True)
