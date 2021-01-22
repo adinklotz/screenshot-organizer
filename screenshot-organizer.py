@@ -30,5 +30,10 @@ def captures_generator(captures_path):
         game_name = re.sub(r'\.+$| +$', '', game_name)
         yield file, game_name
 
+def clean_name(name):
+    # source https://stackoverflow.com/questions/1976007/what-characters-are-forbidden-in-windows-and-linux-directory-names
+    pattern = re.compile(r'\/|<|>|:|"|\\|\||\?|\*|\.+$| +$')
+    return pattern.sub('', name)
+
 if __name__ == "__main__":
     main()
