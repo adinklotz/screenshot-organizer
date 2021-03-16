@@ -30,6 +30,18 @@ def captures_generator(captures_path):
         game_name = re.sub(r'\.+$| +$', '', game_name)
         yield file, game_name
 
+def steam_generator(steam_screenshots_path):
+    extensions = (".png", ".jpg")
+    steam_ids = None
+    for file in steam_screenshots_path.iterdir():
+        extension = os.path.splitext(file.name)[1]
+        if extension not in extensions:
+            continue
+        if steam_ids == None:
+            steam_ids = load_steam_ids()
+        id = file.name.split("_")[0]
+        yield file, steam_ids[id]
+
 def load_steam_ids():
     """
     Gets the steam IDs dictionary from disk if there, downloads it if not
