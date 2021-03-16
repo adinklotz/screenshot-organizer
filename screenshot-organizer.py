@@ -2,6 +2,9 @@ import re
 from pathlib import Path
 import os
 import shutil
+import json
+import urllib.request
+import itertools
 
 def main():
     screenshots = Path('D:/Google Drive/Pictures/Screenshots')
