@@ -9,8 +9,9 @@ import itertools
 def main():
     screenshots = Path('D:/Google Drive/Pictures/Screenshots')
     captures = screenshots / 'Captures'
-    for file, game_name in captures_generator(captures):
-        game_dir = screenshots / 'Games' / game_name
+    steam = screenshots / 'Steam'
+    for file, game_name in itertools.chain(captures_generator(captures), steam_generator(steam)):
+        game_dir = screenshots / 'Games' / clean_name(game_name)
         game_dir.mkdir(exist_ok=True, parents=True)
         # Filepaths must be converted to strings because of a Python bug
         # in python <3.9, move breaks on Path objects
