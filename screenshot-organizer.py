@@ -30,6 +30,21 @@ def captures_generator(captures_path):
         game_name = re.sub(r'\.+$| +$', '', game_name)
         yield file, game_name
 
+def load_steam_ids():
+    """
+    Gets the steam IDs dictionary from disk if there, downloads it if not
+
+    :return: A dictionary of (string) Steam IDs as keys and corresponding game names as values
+    :rtype: Dictionary<String, String>
+    """
+    steam_ids_json = Path(__file__).parent / "steam_ids.json"
+    if steam_ids_json.exists():
+        with open(steam_ids_json, encoding="utf-8") as file:
+            steam_ids_dict = json.load(file)
+        return steam_ids_dict 
+    else:
+        return update_steam_ids()
+
 def update_steam_ids():
     """
     Downloads the list of all games from the Steam api, and converts it into a dictionary from keys to names
