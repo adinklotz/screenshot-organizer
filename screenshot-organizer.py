@@ -44,7 +44,17 @@ def steam_generator(steam_screenshots_path):
         if steam_ids == None:
             steam_ids = load_steam_ids()
         id = file.name.split("_")[0]
-        yield file, steam_ids[id]
+        try:
+            name = steam_ids[id]
+        except KeyError:
+            # Update the list, in case it's a game that was added since the list was downloaded
+            steam_ids = update_steam_ids()
+            try:
+                # If it's still not there, just skip it
+                name = steam_ids[id]
+            except KeyError:
+                continue
+        yield file, name
 
 def load_steam_ids():
     """
