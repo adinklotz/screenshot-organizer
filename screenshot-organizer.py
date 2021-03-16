@@ -30,6 +30,27 @@ def captures_generator(captures_path):
         game_name = re.sub(r'\.+$| +$', '', game_name)
         yield file, game_name
 
+def update_steam_ids():
+    """
+    Downloads the list of all games from the Steam api, and converts it into a dictionary from keys to names
+
+    :return: A dictionary of (string) Steam IDs as keys and corresponding game names as values
+    :rtype: Dictionary<String, String>
+    """
+    with urllib.request.urlopen("https://api.steampowered.com/ISteamApps/GetAppList/v0002/") as url:
+        raw_steam_data = json.loads(url.read().decode('utf-8'))
+
+    # Steam provides the data in the form {'applist': {'apps': [{'appid':'1234', 'name':'Game 1'}, {'appid':'5678', 'name':'Game 2'}]}}
+    # I want to convert it to just a dictionary of the form {'1234':'Game 1', '5678':'Game 2'}
+    steam_ids_dict = {}
+    for app in raw_steam_data['applist']['apps']:
+        steam_ids_dict[str(app['appid'])] = app['name']
+
+    steam_ids_json = Path(__file__).parent / "steam_ids.json"
+    with open(steam_ids_json, 'w', encoding="utf-8") as file:
+        json.dump(steam_ids_dict, file)
+    return steam_ids_dict
+
 def clean_name(name):
     # source https://stackoverflow.com/questions/1976007/what-characters-are-forbidden-in-windows-and-linux-directory-names
     pattern = re.compile(r'\/|<|>|:|"|\\|\||\?|\*|\.+$| +$')
