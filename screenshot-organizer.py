@@ -11,7 +11,8 @@ def main():
     captures = screenshots / 'Captures'
     steam = screenshots / 'Steam'
     for file, game_name in itertools.chain(captures_generator(captures), steam_generator(steam)):
-        game_dir = screenshots / 'Games' / clean_name(game_name)
+        game_name = map_name(clean_name(game_name))
+        game_dir = screenshots / 'Games' / game_name
         game_dir.mkdir(exist_ok=True, parents=True)
         # Filepaths must be converted to strings because of a Python bug
         # in python <3.9, move breaks on Path objects
@@ -96,6 +97,27 @@ def clean_name(name):
     # source https://stackoverflow.com/questions/1976007/what-characters-are-forbidden-in-windows-and-linux-directory-names
     pattern = re.compile(r'\/|<|>|:|"|\\|\||\?|\*|\.+$| +$')
     return pattern.sub('', name)
+
+def map_name(name):
+    """
+    Converts the name according to a JSON mapping
+    Useful when the title Capture gets includes extra stuff.
+    e.g. Control comes up as "Control 0.0.344.1879 (FINAL_release)"
+    The JSON has a mapping of parsed names to nice names, allowing you to
+    rename a game's folder, or have multiple names go into the same folder, etc.
+
+    :param name: The game name parsed from the file
+    :type name: String
+    """
+
+    # This is a function attribute, which allows setup only the first time the function is called
+    if map_name.mapping is None:
+        with open('mappings.json', 'r') as file:
+            map_name.mapping = json.load(file)
+    
+    return map_name.mapping.get(name, name)
+
+map_name.mapping = None
 
 if __name__ == "__main__":
     main()
