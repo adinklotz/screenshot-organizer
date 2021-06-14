@@ -10,8 +10,9 @@ def main():
     screenshots = Path('D:/Google Drive/Pictures/Screenshots')
     captures = screenshots / 'Captures'
     steam = screenshots / 'Steam'
+    mappings = MappingsManager()
     for file, game_name in itertools.chain(captures_generator(captures), steam_generator(steam)):
-        game_name = map_name(clean_name(game_name))
+        game_name = mappings.map_name(clean_name(game_name))
         game_dir = screenshots / 'Games' / game_name
         game_dir.mkdir(exist_ok=True, parents=True)
         # Filepaths must be converted to strings because of a Python bug
@@ -98,26 +99,24 @@ def clean_name(name):
     pattern = re.compile(r'\/|<|>|:|"|\\|\||\?|\*|\.+$| +$')
     return pattern.sub('', name)
 
-def map_name(name):
-    """
-    Converts the name according to a JSON mapping
-    Useful when the title Capture gets includes extra stuff.
-    e.g. Control comes up as "Control 0.0.344.1879 (FINAL_release)"
-    The JSON has a mapping of parsed names to nice names, allowing you to
-    rename a game's folder, or have multiple names go into the same folder, etc.
-
-    :param name: The game name parsed from the file
-    :type name: String
-    """
-
-    # This is a function attribute, which allows setup only the first time the function is called
-    if map_name.mapping is None:
+class MappingsManager:
+    def __init__(self):
         with open('mappings.json', 'r') as file:
-            map_name.mapping = json.load(file)
-    
-    return map_name.mapping.get(name, name)
+            self.mapping = json.load(file)
+            
+    def map_name(self, name):
+        """
+        Converts the name according to a JSON mapping
+        Useful when the title Capture gets includes extra stuff.
+        e.g. Control comes up as "Control 0.0.344.1879 (FINAL_release)"
+        The JSON has a mapping of parsed names to nice names, allowing you to
+        rename a game's folder, or have multiple names go into the same folder, etc.
 
-map_name.mapping = None
+        :param name: The game name parsed from the file
+        :type name: String
+        """
+
+        return self.mapping.get(name, name)
 
 if __name__ == "__main__":
     main()
